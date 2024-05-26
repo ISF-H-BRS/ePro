@@ -1,0 +1,29 @@
+Compilation and Installation of the ePro Firmware
+-------------------------------------------------
+
+The ePro firmware uses a CMake project file for compilation and installation. It is
+intended for use on Linux/Unix and assumes an Atmel AVR ISP mkII as programmer.
+
+The following software components are required:
+* CMake >=3.5
+* GNU Make
+* GNU AVR Toolchain (avr-binutils, avr-gcc, avr-libc)
+* Python 3.x
+* AVRDUDE
+
+Run 'mkdir build && cd build && cmake -DCMAKE_TOOLCHAIN_FILE=../AVRToolchain.cmake ..'
+to generate a Makefile, then run 'make' to compile the firmware.
+
+When programming a device for the first time, the correct fuse bits need to be set by
+running 'make fuses'.
+
+To upload the compiled program to the ePro device, simply run 'make program'.
+
+Access to the programmer usually requires root permissions. In order to be able to program
+the device as a normal user, we can define a custom udev rule. To do so, create a new rule
+file (e.g. /etc/udev/rules.d/10-avrdude.rules) with the following content:
+
+# Atmel AVR ISP mkII
+SUBSYSTEM=="usb", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2104", GROUP="users", MODE="0660"
+
+To apply the new rule immediately, run 'udevadm control --reload', then reconnect the programmer.
